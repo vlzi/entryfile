@@ -1,5 +1,7 @@
-(async function()
+if (window.alreadyFileIOImported) console.log("이미 파일 관련 블록을 불러오셨습니다.");
+else (async function()
 {
+    window.alreadyFileIOImported = true;
     if (~location.href.indexOf("ws/new")) return "새 프로젝트입니다. 저장하시고 다시 실행해주세요.";
     if (!confirm("코드를 불러오는 과정에서 저장하시지 않은 정보는 지워질 수 있습니다. 그러나 전에 코드를 불러오신 후 사용하시고 저장하신 후에 다시 코드를 불러오시지 않은 상태에서 저장하시면 저장된 코드가 지워집니다. 코드를 불러오시겠습니까?")) return "불러오기를 중지합니다.";
     if (Entry.engine.isState('run')) await Entry.engine.stopButton.click();
