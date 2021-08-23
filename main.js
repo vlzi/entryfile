@@ -6,7 +6,7 @@ else (async function()
     if (!confirm("코드를 불러오는 과정에서 저장하시지 않은 정보는 지워질 수 있습니다. 그러나 전에 코드를 불러오신 후 사용하시고 저장하신 후에 다시 코드를 불러오시지 않은 상태에서 저장하시면 저장된 코드가 지워집니다. 코드를 불러오시겠습니까?")) return "불러오기를 중지합니다.";
     if (!Entry.engine.isState('stop')) await Entry.engine.stopButton.click();
     
-    let files = [];
+    let files = [], uploadPopupOpen = false;
     
     const uploadPopup = document.createElement('div');
     uploadPopup.innerHTML = `<div class="dimmed__c1156"><div class="center__c1156"><div class="modal__c1156" style="min-height: unset;"><div class="head__c1156">
@@ -20,6 +20,7 @@ else (async function()
         console.log('close');
         files = [];
         uploadPopup.style.display = "none";
+        uploadPopupOpen = false
     }
     document.getElementById("fileUploadImg").onclick = () =>
     {
@@ -34,7 +35,9 @@ else (async function()
                     reader.readAsArrayBuffer(file);
                 })
             ));
+            uploadPopup.style.display = "none";
             console.log(files);
+            uploadPopupOpen = false
         };
         input.click();
     };
@@ -44,6 +47,7 @@ else (async function()
         await Entry.engine.stopButton.click();
         files = [];
         uploadPopup.style.display = "none";
+        uploadPopupOpen = false
     }
     Entry.block.ask_files = {
         color: "#dd47d8",
@@ -53,14 +57,29 @@ else (async function()
         events: {},
         "class": "file",
         params: [
-            {type: "Text", text: "파일 요청하기", color: "#FFF"},
+            {type: "Text", text: "파일 요청하고 기다리기", color: "#FFF"},
             {type: "Indicator", img: "block_icon/variable_icon.svg", size: 11}
         ],
         def: {params: [null, null], type: "ask_files", category: "variable", id: "askFiles"},
         template: "%1%2",
         isFor: ["category_variable"],
-        func: (spr,scr) => { 
-            uploadPopup.style.display = "block";
+        func: (spr,scr) => {
+            if (scr.isWating)
+            {
+                if (uploadPopupOpen) return scr;
+                else 
+                {
+                    delete scr.isWating;
+                    return scr.callReturn();
+                }
+            }
+            else
+            {
+                uploadPopup.style.display = "block";
+                uploadPopupOpen = true;
+                scr.isWating = true;
+                return scr;
+            }
         }
     }
     Entry.playground.blockMenu._buildCategoryCodes(["ask_files"], "variable").forEach(function (t)
