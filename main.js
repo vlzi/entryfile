@@ -51,6 +51,7 @@ else (async function()
         uploadPopup.style.display = "none";
         uploadPopupOpen = false
     }
+////
     Entry.block.ask_files_and_wait = {
         color: "#dd47d8",
         outerLine: "#b819b3",
@@ -113,7 +114,7 @@ else (async function()
         isFor: ["category_variable"],
         func: (spr,scr) => 
         {
-            const index = scr.getValue("index", scr);
+            const index = parseInt(scr.getValue("index", scr));
             if (index < 1 || index > files.length) throw new Error("범위 바깥입니다.");
             return files[index - 1].name;
         }
@@ -135,7 +136,7 @@ else (async function()
         isFor: ["category_variable"],
         func: (spr,scr) => 
         {
-            const index = scr.getValue("index", scr);
+            const index = parseInt(scr.getValue("index", scr));
             if (index < 1 || index > files.length) throw new Error("범위 바깥입니다.");
             return files[index - 1].bytes.length;
         }
@@ -153,15 +154,15 @@ else (async function()
             {type: "Block", accept: "string", defaultType: "number"},
             {type: "Text", text: "번째 바이트", color: "#FFF"}
         ],
-        def: {params: [{ type: "number", params: [1], id: "p1" }, null, { type: "number", params: [3], id: "p2"}, null], type: "file_byte", category: "variable", id: "FILE4"},
+        def: {params: [{ type: "number", params: [1], id: "p1" }, null, { type: "number", params: [1], id: "p2"}, null], type: "file_byte", category: "variable", id: "FILE4"},
         paramsKeyMap: { fileIndex: 0, byteIndex: 2},
         template: "%1%2%3%4",
         isFor: ["category_variable"],
         func: (spr,scr) => 
         {
-            const fileIndex = scr.getValue("fileIndex", scr);
+            const fileIndex = parseInt(scr.getValue("fileIndex", scr));
             if (fileIndex < 1 || fileIndex > files.length) throw new Error("범위 바깥입니다.");
-            const bytes = files[fileIndex - 1], byteIndex = scr.getValue("byteIndex", scr);
+            const bytes = files[fileIndex - 1].bytes, byteIndex = parseInt(scr.getValue("byteIndex", scr));
             if (byteIndex < 1 || byteIndex > bytes.length) throw new Error("범위 밖입니다.");
             console.log(fileIndex, byteIndex);
             return bytes[byteIndex - 1];
